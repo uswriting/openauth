@@ -442,7 +442,7 @@ export interface IssuerInput<
 export function issuer<
   Providers extends Record<string, Provider<any>>,
   Subjects extends SubjectSchema,
-  Result = {
+  Result = {redirect_uri: string} & {
     [key in keyof Providers]: Prettify<
       {
         provider: key
@@ -508,10 +508,10 @@ export function issuer<
 
   const auth: Omit<ProviderOptions<any>, "name"> = {
     async success(ctx: Context, properties: any, successOpts) {
+      const authorization = await getAuthorization(ctx)
       return await input.success(
         {
           async subject(type, properties, subjectOpts) {
-            const authorization = await getAuthorization(ctx)
             const subject = subjectOpts?.subject
               ? subjectOpts.subject
               : await resolveSubject(type, properties)
@@ -572,6 +572,7 @@ export function issuer<
         {
           provider: ctx.get("provider"),
           ...properties,
+          redirect_uri: authorization.redirect_uri
         },
         ctx.req.raw,
       )
