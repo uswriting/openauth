@@ -692,9 +692,9 @@ export function createClient(input: ClientInput): Client {
       token: string,
       hint: "access_token" | "refresh_token",
       opts?: {
-        all?: boolean;
+        all?: boolean
       },
-    ): Promise<{ err: false; } | { err: UnsupportedTokenTypeError; }> {
+    ): Promise<{ err: false } | { err: UnsupportedTokenTypeError }> {
       const tokens = await f(issuer + "/revoke", {
         method: "POST",
         headers: {
@@ -705,13 +705,13 @@ export function createClient(input: ClientInput): Client {
           token_type_hint: hint,
           revoke_all: opts?.all ? "true" : "false",
         }).toString(),
-      });
+      })
       if (!tokens.ok) {
         return {
           err: new UnsupportedTokenTypeError(),
-        };
+        }
       }
-      return { err: false };
+      return { err: false }
     },
     async verify<T extends SubjectSchema>(
       subjects: T,
