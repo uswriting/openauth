@@ -32,9 +32,9 @@ jobs:
       - name: Setup Node for publishing
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@uswriting'
+          node-version: "20.x"
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@uswriting"
 
       # Create an .npmrc file inside the package directory for GitHub Packages authentication
       - name: Configure npm for GitHub Packages

@@ -478,6 +478,20 @@ export interface Client {
     refresh: string,
     opts?: RefreshOptions,
   ): Promise<RefreshSuccess | RefreshError>
+
+  /**
+   * Revoke the specified token.
+   *
+   * @param token - The token to revoke.
+   * @param hint - Indicates whether the token is an access or refresh token.
+   * @param opts - Optional configuration, such as revoking all tokens associated with the subject
+   */
+  revoke(
+    token: string,
+    hint: "access_token" | "refresh_token",
+    opts?: { all?: boolean },
+  ): Promise<{ err: false } | { err: UnsupportedTokenTypeError }>
+
   /**
    * Verify the token in the incoming request.
    *
