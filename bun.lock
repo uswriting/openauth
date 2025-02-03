@@ -91,18 +91,18 @@
     },
     "packages/openauth": {
       "name": "@uswriting/openauth",
-      "version": "0.3.6",
+      "version": "0.3.7",
       "dependencies": {
         "@standard-schema/spec": "1.0.0-beta.3",
         "aws4fetch": "1.0.20",
         "jose": "5.9.6",
       },
       "devDependencies": {
-        "@cloudflare/workers-types": "4.20241205.0",
+        "@cloudflare/workers-types": "4.20250129.0",
         "@tsconfig/node22": "22.0.0",
         "@types/node": "22.10.1",
         "arctic": "2.2.2",
-        "hono": "4.6.9",
+        "hono": "4.6.20",
         "typescript": "5.6.3",
         "valibot": "1.0.0-beta.5",
       },
@@ -197,7 +197,7 @@
 
     "@changesets/write": ["@changesets/write@0.3.2", "", { "dependencies": { "@changesets/types": "^6.0.0", "fs-extra": "^7.0.1", "human-id": "^1.0.2", "prettier": "^2.7.1" } }, "sha512-kDxDrPNpUgsjDbWBvUo27PzKX4gqeKOlhibaOXDJA6kuBisGqNHv/HwGJrAu8U/dSf8ZEFIeHIPtvSlZI1kULw=="],
 
-    "@cloudflare/workers-types": ["@cloudflare/workers-types@4.20241205.0", "", {}, "sha512-pj1VKRHT/ScQbHOIMFODZaNAlJHQHdBSZXNIdr9ebJzwBff9Qz8VdqhbhggV7f+aUEh8WSbrsPIo4a+WtgjUvw=="],
+    "@cloudflare/workers-types": ["@cloudflare/workers-types@4.20250129.0", "", {}, "sha512-H7g/sDB9GaV+fIPf3utNEYncFhryIvDThiBbfZtu0bZmVXcVd9ApP3OMqUYhNV8MShWQASvgWletKKBZGT9/oA=="],
 
     "@emnapi/runtime": ["@emnapi/runtime@1.3.1", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-kEBmG8KyqtxJZv+ygbEim+KCGtIq1fC22Ms3S4ziXmYKm8uyoLX0MHONVKwp+9opg390VaKRNt4a7A9NwmpNhw=="],
 
@@ -739,7 +739,7 @@
 
     "hastscript": ["hastscript@9.0.0", "", { "dependencies": { "@types/hast": "^3.0.0", "comma-separated-tokens": "^2.0.0", "hast-util-parse-selector": "^4.0.0", "property-information": "^6.0.0", "space-separated-tokens": "^2.0.0" } }, "sha512-jzaLBGavEDKHrc5EfFImKN7nZKKBdSLIdGvCwDZ9TfzbF2ffXiov8CKE445L2Z1Ek2t/m4SKQ2j6Ipv7NyUolw=="],
 
-    "hono": ["hono@4.6.9", "", {}, "sha512-p/pN5yZLuZaHzyAOT2nw2/Ud6HhJHYmDNGH6Ck1OWBhPMVeM1r74jbCRwNi0gyFRjjbsGgoHbOyj7mT1PDNbTw=="],
+    "hono": ["hono@4.6.20", "", {}, "sha512-5qfNQeaIptMaJKyoJ6N/q4gIq0DBp2FCRaLNuUI3LlJKL4S37DY/rLL1uAxA4wrPB39tJ3s+f7kgI79O4ScSug=="],
 
     "html-escaper": ["html-escaper@3.0.3", "", {}, "sha512-RuMffC89BOWQoY0WKGpIhn5gX3iI54O6nRA0yC124NYVtzjmFWBIiFd8M0x+ZdX0P9R4lADg1mgP8C7PxGOWuQ=="],
 
