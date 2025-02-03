@@ -26,7 +26,7 @@ jobs:
         run: bun install
 
       - name: Build openauth package
-        run: bun run --filter="@openauthjs/openauth" build
+        run: bun run --filter="@uswriting/openauth" build
 
       # Setup Node so that npm publish works properly.
       - name: Setup Node for publishing

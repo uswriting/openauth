@@ -18,7 +18,7 @@ designed to run anywhere.
 The `issuer` function requires a few things:
 
 ```ts title="issuer.ts"
-import { issuer } from "@openauthjs/openauth"
+import { issuer } from "@uswriting/openauth"
 
 const app = issuer({
   providers: { ... },
@@ -34,8 +34,8 @@ You start by specifying the auth providers you are going to use. Let's say you w
 to be able to authenticate with GitHub and with their email and password.
 
 ```ts title="issuer.ts"
-import { GithubProvider } from "@openauthjs/openauth/provider/github"
-import { PasswordProvider } from "@openauthjs/openauth/provider/password"
+import { GithubProvider } from "@uswriting/openauth/provider/github"
+import { PasswordProvider } from "@uswriting/openauth/provider/password"
 
 const app = issuer({
   providers: {
@@ -83,7 +83,7 @@ You define the shape of these in the `subjects` field.
 
 ```ts title="subjects.ts"
 import { object, string } from "valibot"
-import { createSubjects } from "@openauthjs/openauth/subject"
+import { createSubjects } from "@uswriting/openauth/subject"
 
 const subjects = createSubjects({
   user: object({
@@ -179,7 +179,7 @@ Create an OpenAuth server, a Hono app.
 </Section>
 The providers that you want your OpenAuth server to support.
 ```ts title="issuer.ts"
-import { GithubProvider } from "@openauthjs/openauth/provider/github"
+import { GithubProvider } from "@uswriting/openauth/provider/github"
 
 issuer({
   providers: {
@@ -215,7 +215,7 @@ You can also specify multiple providers.
 </Section>
 The storage adapter that you want to use.
 ```ts title="issuer.ts"
-import { DynamoStorage } from "@openauthjs/openauth/storage/dynamo"
+import { DynamoStorage } from "@uswriting/openauth/storage/dynamo"
 
 issuer({
   storage: DynamoStorage()
@@ -233,7 +233,7 @@ issuer({
 The shape of the subjects that you want to return.
 ```ts title="issuer.ts"
 import { object, string } from "valibot"
-import { createSubjects } from "@openauthjs/openauth/subject"
+import { createSubjects } from "@uswriting/openauth/subject"
 
 issuer({
   subjects: createSubjects({
@@ -257,7 +257,7 @@ The theme you want to use for the UI.
 This includes the UI the user sees when selecting a provider. And the `PasswordUI` and
 `CodeUI` that are used by the `PasswordProvider` and `CodeProvider`.
 ```ts title="issuer.ts"
-import { THEME_SST } from "@openauthjs/openauth/ui/theme"
+import { THEME_SST } from "@uswriting/openauth/ui/theme"
 
 issuer({
   theme: THEME_SST
@@ -270,7 +270,7 @@ Or define your own.
 
 
 ```ts title="issuer.ts"
-import type { Theme } from "@openauthjs/openauth/ui/theme"
+import type { Theme } from "@uswriting/openauth/ui/theme"
 
 const MY_THEME: Theme = {
   // ...
@@ -390,7 +390,7 @@ Optionally, configure the UI that's displayed when the user visits the root URL 
 of the OpenAuth server.
 
 ```ts title="issuer.ts"
-import { Select } from "@openauthjs/openauth/ui/select"
+import { Select } from "@uswriting/openauth/ui/select"
 
 issuer({
   select: Select({
@@ -465,7 +465,7 @@ A list of errors that can be thrown by OpenAuth.
 You can use these errors to check the type of error and handle it. For example.
 
 ```ts
-import { InvalidAuthorizationCodeError } from "@openauthjs/openauth/error"
+import { InvalidAuthorizationCodeError } from "@uswriting/openauth/error"
 
 if (err instanceof InvalidAuthorizationCodeError) {
   // handle invalid code error

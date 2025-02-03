@@ -1,5 +1,5 @@
 {
-  "name": "@openauthjs/example-nextjs",
+  "name": "@uswriting/example-nextjs",
   "version": "0.1.6",
   "private": true,
   "scripts": {
@@ -9,10 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@openauthjs/openauth": "workspace:*",
-    "next": "15.1.0",
-    "react": "19.0.0",
-    "react-dom": "19.0.0"
+    "@uswriting/openauth": "workspace:*",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "next": "15.1.0"
   },
   "devDependencies": {
     "@types/node": "22.10.1",

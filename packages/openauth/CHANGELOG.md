@@ -1,4 +1,4 @@
-# @openauthjs/openauth
+# @uswriting/openauth
 
 ## 0.4.2
 

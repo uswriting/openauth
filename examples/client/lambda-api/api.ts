@@ -1,6 +1,6 @@
 import { Context, Hono } from "hono"
 import { getCookie, setCookie } from "hono/cookie"
-import { createClient } from "@openauthjs/openauth/client"
+import { createClient } from "@uswriting/openauth/client"
 import { handle } from "hono/aws-lambda"
 import { subjects } from "../../subjects"
 
