@@ -1010,11 +1010,11 @@ export function issuer<
       credentials: false,
     }),
     async (c) => {
-      const form = await c.req.formData();
-      const tokenParam = form.get("token");
+      const form = await c.req.formData()
+      const tokenParam = form.get("token")
 
       if (tokenParam) {
-        const tokenTypeHint = form.get("token_type_hint");
+        const tokenTypeHint = form.get("token_type_hint")
         if (tokenTypeHint?.toString() !== "refresh_token") {
           // https://datatracker.ietf.org/doc/html/rfc7009#section-2.2.1
           return c.json(
@@ -1023,29 +1023,32 @@ export function issuer<
               error_description: "Revocation of access tokens is not supported",
             },
             503,
-          );
+          )
         }
 
-        const splits = tokenParam.toString().split(":");
-        const token = splits.pop()!;
-        const subject = splits.join(":");
-        const key = ["oauth:refresh", subject, token];
+        const splits = tokenParam.toString().split(":")
+        const token = splits.pop()!
+        const subject = splits.join(":")
+        const key = ["oauth:refresh", subject, token]
         const payload = await Storage.get<{
-          type: string;
-          properties: any;
-          clientID: string;
+          type: string
+          properties: any
+          clientID: string
           ttl: {
-            access: number;
-            refresh: number;
-          };
-        }>(storage, key);
+            access: number
+            refresh: number
+          }
+        }>(storage, key)
 
         if (payload) {
-          await Storage.remove(storage, key);
-          const revokeAll = form.get("revoke_all") === "true";
+          await Storage.remove(storage, key)
+          const revokeAll = form.get("revoke_all") === "true"
           if (revokeAll) {
-            for await (const [key] of Storage.scan(storage, ["oauth:refresh", subject])) {
-              await Storage.remove(storage, key);
+            for await (const [key] of Storage.scan(storage, [
+              "oauth:refresh",
+              subject,
+            ])) {
+              await Storage.remove(storage, key)
             }
           }
         }

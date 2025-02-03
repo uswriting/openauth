@@ -106,7 +106,7 @@ export class InvalidRefreshTokenError extends Error {
  */
 export class UnsupportedTokenTypeError extends Error {
   constructor() {
-    super("Unsupported token type");
+    super("Unsupported token type")
   }
 }
 
