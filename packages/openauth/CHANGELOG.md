@@ -1,5 +1,11 @@
 # @openauthjs/openauth
 
+## 0.3.7
+
+### Patch Changes
+
+- ca5a549: adds revoking
+
 ## 0.3.6
 
 ### Patch Changes
