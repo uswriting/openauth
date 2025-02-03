@@ -18,7 +18,7 @@ and verify tokens.
 First, create a client.
 
 ```ts title="client.ts"
-import { createClient } from "@openauthjs/openauth/client"
+import { createClient } from "@uswriting/openauth/client"
 
 const client = createClient({
   clientID: "my-client",
@@ -153,7 +153,7 @@ This method returns the access and refresh tokens. Or if it fails, it returns an
 you can handle depending on the error.
 
 ```ts
-import { InvalidAuthorizationCodeError } from "@openauthjs/openauth/error"
+import { InvalidAuthorizationCodeError } from "@uswriting/openauth/error"
 
 if (exchanged.err) {
   if (exchanged.err instanceof InvalidAuthorizationCodeError) {
@@ -202,7 +202,7 @@ if (next.tokens) {
 Or if it fails, it returns an error that you can handle depending on the error.
 
 ```ts
-import { InvalidRefreshTokenError } from "@openauthjs/openauth/error"
+import { InvalidRefreshTokenError } from "@uswriting/openauth/error"
 
 if (next.err) {
   if (next.err instanceof InvalidRefreshTokenError) {
@@ -258,7 +258,7 @@ if (verified.tokens) {
 Or if it fails, it returns an error that you can handle depending on the error.
 
 ```ts
-import { InvalidRefreshTokenError } from "@openauthjs/openauth/error"
+import { InvalidRefreshTokenError } from "@uswriting/openauth/error"
 
 if (verified.err) {
   if (verified.err instanceof InvalidRefreshTokenError) {
@@ -429,7 +429,7 @@ Returned when the exchange fails.
 </Section>
 The type of error that occurred. You can handle this by checking the type.
 ```ts
-import { InvalidAuthorizationCodeError } from "@openauthjs/openauth/error"
+import { InvalidAuthorizationCodeError } from "@uswriting/openauth/error"
 
 console.log(err instanceof InvalidAuthorizationCodeError)
 ```
@@ -476,7 +476,7 @@ Returned when the refresh fails.
 </Section>
 The type of error that occurred. You can handle this by checking the type.
 ```ts
-import { InvalidRefreshTokenError } from "@openauthjs/openauth/error"
+import { InvalidRefreshTokenError } from "@uswriting/openauth/error"
 
 console.log(err instanceof InvalidRefreshTokenError)
 ```
@@ -566,7 +566,7 @@ Returned when the verify call fails.
 </Section>
 The type of error that occurred. You can handle this by checking the type.
 ```ts
-import { InvalidRefreshTokenError } from "@openauthjs/openauth/error"
+import { InvalidRefreshTokenError } from "@uswriting/openauth/error"
 
 console.log(err instanceof InvalidRefreshTokenError)
 ```

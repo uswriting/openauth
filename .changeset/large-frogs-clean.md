@@ -1,5 +1,5 @@
 ---
-"@openauthjs/openauth": patch
+"@uswriting/openauth": patch
 ---
 
 adds revoking

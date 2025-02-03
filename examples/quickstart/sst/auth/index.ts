@@ -1,8 +1,8 @@
 import { handle } from "hono/aws-lambda"
-import { issuer } from "@openauthjs/openauth"
-import { CodeUI } from "@openauthjs/openauth/ui/code"
-import { CodeProvider } from "@openauthjs/openauth/provider/code"
-import { MemoryStorage } from "@openauthjs/openauth/storage/memory"
+import { issuer } from "@uswriting/openauth"
+import { CodeUI } from "@uswriting/openauth/ui/code"
+import { CodeProvider } from "@uswriting/openauth/provider/code"
+import { MemoryStorage } from "@uswriting/openauth/storage/memory"
 import { subjects } from "./subjects"
 
 async function getUser(email: string) {

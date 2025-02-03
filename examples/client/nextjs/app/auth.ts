@@ -1,4 +1,4 @@
-import { createClient } from "@openauthjs/openauth/client"
+import { createClient } from "@uswriting/openauth/client"
 import { cookies as getCookies } from "next/headers"
 export { subjects } from "../../../subjects"
 
