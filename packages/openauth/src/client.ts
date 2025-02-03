@@ -51,6 +51,7 @@ import {
   InvalidAccessTokenError,
   InvalidAuthorizationCodeError,
   InvalidRefreshTokenError,
+  UnsupportedTokenTypeError,
   InvalidSubjectError,
 } from "./error.js"
 import { generatePKCE } from "./pkce.js"
@@ -686,6 +687,31 @@ export function createClient(input: ClientInput): Client {
           refresh: json.refresh_token as string,
         },
       }
+    },
+    async revoke(
+      token: string,
+      hint: "access_token" | "refresh_token",
+      opts?: {
+        all?: boolean;
+      },
+    ): Promise<{ err: false; } | { err: UnsupportedTokenTypeError; }> {
+      const tokens = await f(issuer + "/revoke", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          token: token,
+          token_type_hint: hint,
+          revoke_all: opts?.all ? "true" : "false",
+        }).toString(),
+      });
+      if (!tokens.ok) {
+        return {
+          err: new UnsupportedTokenTypeError(),
+        };
+      }
+      return { err: false };
     },
     async verify<T extends SubjectSchema>(
       subjects: T,
