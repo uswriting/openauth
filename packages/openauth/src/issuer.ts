@@ -1001,6 +1001,61 @@ export function issuer<
     },
   )
 
+  app.post(
+    "/revoke",
+    cors({
+      origin: "*",
+      allowHeaders: ["*"],
+      allowMethods: ["POST"],
+      credentials: false,
+    }),
+    async (c) => {
+      const form = await c.req.formData();
+      const tokenParam = form.get("token");
+
+      if (tokenParam) {
+        const tokenTypeHint = form.get("token_type_hint");
+        if (tokenTypeHint?.toString() !== "refresh_token") {
+          // https://datatracker.ietf.org/doc/html/rfc7009#section-2.2.1
+          return c.json(
+            {
+              error: "unsupported_token_type",
+              error_description: "Revocation of access tokens is not supported",
+            },
+            503,
+          );
+        }
+
+        const splits = tokenParam.toString().split(":");
+        const token = splits.pop()!;
+        const subject = splits.join(":");
+        const key = ["oauth:refresh", subject, token];
+        const payload = await Storage.get<{
+          type: string;
+          properties: any;
+          clientID: string;
+          ttl: {
+            access: number;
+            refresh: number;
+          };
+        }>(storage, key);
+
+        if (payload) {
+          await Storage.remove(storage, key);
+          const revokeAll = form.get("revoke_all") === "true";
+          if (revokeAll) {
+            for await (const [key] of Storage.scan(storage, ["oauth:refresh", subject])) {
+              await Storage.remove(storage, key);
+            }
+          }
+        }
+      }
+      // According to RFC 7009, always return 200 OK if the token was revoked successfully or
+      // if the client submitted an invalid token / missing token.
+      return c.newResponse(null, 200)
+    },
+  )
+
   app.get("/authorize", async (c) => {
     const provider = c.req.query("provider")
     const response_type = c.req.query("response_type")

@@ -102,6 +102,15 @@ export class InvalidRefreshTokenError extends Error {
 }
 
 /**
+ * The token type provided is not supported for revocation.
+ */
+export class UnsupportedTokenTypeError extends Error {
+  constructor() {
+    super("Unsupported token type");
+  }
+}
+
+/**
  * The given access token is invalid.
  */
 export class InvalidAccessTokenError extends Error {
