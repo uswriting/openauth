@@ -2,7 +2,7 @@ name: format
 
 on:
   push:
-    branches: [master]
+    branches: [uswc]
   pull_request:
   workflow_dispatch:
 

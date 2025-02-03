@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "release": "bun run --filter=\"@openauthjs/openauth\" build && changeset publish"
+    
   },
   "devDependencies": {
     "@tsconfig/node22": "22.0.0",
