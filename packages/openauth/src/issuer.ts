@@ -212,6 +212,7 @@ export interface IssuerInput<
     [key in keyof Providers]: Prettify<
       {
         provider: key
+        state: string
       } & (Providers[key] extends Provider<infer T> ? T : {})
     >
   }[keyof Providers],
@@ -512,10 +513,10 @@ export function issuer<
 
   const auth: Omit<ProviderOptions<any>, "name"> = {
     async success(ctx: Context, properties: any, successOpts) {
+      const authorization = await getAuthorization(ctx)
       return await input.success(
         {
           async subject(type, properties, subjectOpts) {
-            const authorization = await getAuthorization(ctx)
             const subject = subjectOpts?.subject
               ? subjectOpts.subject
               : await resolveSubject(type, properties)
@@ -575,6 +576,7 @@ export function issuer<
         },
         {
           provider: ctx.get("provider"),
+          state: authorization.state || "",
           ...properties,
         },
         ctx.req.raw,

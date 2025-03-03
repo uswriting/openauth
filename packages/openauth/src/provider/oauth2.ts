@@ -136,7 +136,7 @@ interface ProviderState {
 
 export function Oauth2Provider(
   config: Oauth2Config,
-): Provider<{ tokenset: Oauth2Token; clientID: string }> {
+): Provider<{ tokenset: Oauth2Token; clientID: string, state: string }> {
   const query = config.query || {}
   return {
     type: config.type || "oauth2",
@@ -201,6 +201,7 @@ export function Oauth2Provider(
         if ("error" in json)
           throw new OauthError(json.error, json.error_description)
         return ctx.success(c, {
+          state: state || "",
           clientID: config.clientID,
           tokenset: {
             get access() {

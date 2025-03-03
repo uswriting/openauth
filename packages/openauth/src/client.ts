@@ -174,6 +174,11 @@ export interface AuthorizeOptions {
    * If there's only one provider configured, the user will be redirected to that.
    */
   provider?: string
+
+  /**
+   * The state that you can use to verify the code.
+   */
+  state?: string
 }
 
 export interface AuthorizeResult {
@@ -591,7 +596,7 @@ export function createClient(input: ClientInput): Client {
     ) {
       const result = new URL(issuer + "/authorize")
       const challenge: Challenge = {
-        state: crypto.randomUUID(),
+        state: opts?.state || crypto.randomUUID(),
       }
       result.searchParams.set("client_id", input.clientID)
       result.searchParams.set("redirect_uri", redirectURI)
