@@ -136,7 +136,7 @@ interface ProviderState {
 
 export function Oauth2Provider(
   config: Oauth2Config,
-): Provider<{ tokenset: Oauth2Token; clientID: string, state: string }> {
+): Provider<{ tokenset: Oauth2Token; clientID: string; state: string }> {
   const query = config.query || {}
   return {
     type: config.type || "oauth2",
