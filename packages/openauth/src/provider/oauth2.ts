@@ -142,7 +142,7 @@ export function Oauth2Provider(
     type: config.type || "oauth2",
     init(routes, ctx) {
       routes.get("/authorize", async (c) => {
-        const auth = await ctx.get(c, "authorization") as any;
+        const auth = (await ctx.get(c, "authorization")) as any
         const state = auth?.state || crypto.randomUUID()
         const pkce = config.pkce ? await generatePKCE() : undefined
         await ctx.set<ProviderState>(c, "provider", 60 * 10, {
