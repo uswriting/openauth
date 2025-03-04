@@ -1115,7 +1115,7 @@ export function issuer<
           clientID: client_id,
           redirectURI: redirect_uri,
           audience,
-          state
+          state,
         },
         c.req.raw,
       ))
