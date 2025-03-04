@@ -433,6 +433,7 @@ export interface IssuerInput<
       clientID: string
       redirectURI: string
       audience?: string
+      state?: string
     },
     req: Request,
   ): Promise<boolean>
@@ -1114,6 +1115,7 @@ export function issuer<
           clientID: client_id,
           redirectURI: redirect_uri,
           audience,
+          state
         },
         c.req.raw,
       ))
