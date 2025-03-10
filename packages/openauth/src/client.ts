@@ -90,7 +90,7 @@ export interface Tokens {
   /**
    * The number of seconds until the access token expires.
    */
-  expiresIn: number;
+  expiresIn: number
 }
 
 interface ResponseLike {
