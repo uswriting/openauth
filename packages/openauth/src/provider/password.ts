@@ -141,6 +141,28 @@ export interface PasswordConfig {
   validatePassword?:
     | v1.StandardSchema
     | ((password: string) => Promise<string | undefined> | string | undefined)
+  /**
+   * Controls whether new user registration is allowed.
+   *
+   * @default true
+   *
+   * @example
+   * ```ts
+   * { allowRegistration: false }
+   *
+   * {
+   *   allowRegistration: (email) => email.endsWith("@company.com")
+   * }
+   * ```
+   */
+  allowRegistration?: boolean | ((email: string) => boolean | Promise<boolean>)
+  /**
+   * Optional callback used to check whether a user exists in an external system.
+   *
+   * Used together with `allowRegistration: false` so existing users can still
+   * complete the password reset flow.
+   */
+  userExists?: (email: string) => boolean | Promise<boolean>
 }
 
 /**
@@ -172,6 +194,7 @@ export type PasswordRegisterState =
  * | `invalid_code` | The code is invalid. |
  * | `invalid_password` | The password is invalid. |
  * | `password_mismatch` | The passwords do not match. |
+ * | `registration_not_allowed` | Registration is not allowed for this email. |
  */
 export type PasswordRegisterError =
   | {
@@ -192,6 +215,9 @@ export type PasswordRegisterError =
   | {
       type: "validation_error"
       message?: string
+    }
+  | {
+      type: "registration_not_allowed"
     }
 
 /**
@@ -311,6 +337,9 @@ export function PasswordProvider(
       })
 
       routes.get("/register", async (c) => {
+        if (config.allowRegistration === false) {
+          return c.redirect(getRelativeUrl(c, "./authorize"), 302)
+        }
         const state: PasswordRegisterState = {
           type: "start",
         }
@@ -341,6 +370,19 @@ export function PasswordProvider(
           const password = fd.get("password")?.toString()
           const repeat = fd.get("repeat")?.toString()
           if (!email) return transition(provider, { type: "invalid_email" })
+
+          if (config.allowRegistration !== undefined) {
+            const allowed =
+              typeof config.allowRegistration === "function"
+                ? await config.allowRegistration(email)
+                : config.allowRegistration
+            if (!allowed) {
+              return transition(provider, {
+                type: "registration_not_allowed",
+              })
+            }
+          }
+
           if (!password)
             return transition(provider, { type: "invalid_password" })
           if (password !== repeat)
@@ -481,7 +523,25 @@ export function PasswordProvider(
             provider.email,
             "password",
           ])
-          if (!existing) return c.redirect(provider.redirect, 302)
+
+          if (!existing) {
+            // When registration is disabled, allow existing users in an external
+            // system to set a password by seeding a placeholder that the rest of
+            // this handler will overwrite.
+            if (config.allowRegistration === false && config.userExists) {
+              if (await config.userExists(provider.email)) {
+                await Storage.set(
+                  ctx.storage,
+                  ["email", provider.email, "password"],
+                  Math.random().toString(36),
+                )
+              } else {
+                return c.redirect(provider.redirect, 302)
+              }
+            } else {
+              return c.redirect(provider.redirect, 302)
+            }
+          }
 
           const password = fd.get("password")?.toString()
           const repeat = fd.get("repeat")?.toString()

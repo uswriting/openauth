@@ -96,7 +96,25 @@ export async function signingKeys(storage: StorageAdapter): Promise<KeyPair[]> {
     alg: signingAlg,
   }
   await Storage.set(storage, ["signing:key", serialized.id], serialized)
-  return signingKeys(storage)
+
+  // Return the new key directly. Recursing here would re-scan storage; with
+  // eventually consistent backends (Cloudflare KV) the just-written key may not
+  // appear yet, producing duplicate keys on every cold start.
+  const jwk = await exportJWK(key.publicKey)
+  jwk.kid = serialized.id
+  jwk.use = "sig"
+  return [
+    ...results,
+    {
+      id: serialized.id,
+      alg: signingAlg,
+      created: new Date(serialized.created),
+      expired: undefined,
+      public: key.publicKey,
+      private: key.privateKey,
+      jwk,
+    },
+  ]
 }
 
 export async function encryptionKeys(
@@ -135,5 +153,20 @@ export async function encryptionKeys(
     alg: encryptionAlg,
   }
   await Storage.set(storage, ["encryption:key", serialized.id], serialized)
-  return encryptionKeys(storage)
+
+  // See signingKeys above.
+  const jwk = await exportJWK(key.publicKey)
+  jwk.kid = serialized.id
+  return [
+    ...results,
+    {
+      id: serialized.id,
+      alg: encryptionAlg,
+      created: new Date(serialized.created),
+      expired: undefined,
+      public: key.publicKey,
+      private: key.privateKey,
+      jwk,
+    },
+  ]
 }

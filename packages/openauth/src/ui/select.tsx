@@ -24,7 +24,17 @@
  */
 /** @jsxImportSource hono/jsx */
 
+import { basePath } from "../issuer.js"
 import { Layout } from "./base.js"
+
+const DEFAULT_COPY = {
+  /**
+   * Copy for the provider button.
+   */
+  button_provider: "Continue with",
+}
+
+export type SelectCopy = typeof DEFAULT_COPY
 
 export interface SelectProps {
   /**
@@ -56,6 +66,10 @@ export interface SelectProps {
       display?: string
     }
   >
+  /**
+   * Custom copy for the UI.
+   */
+  copy?: Partial<SelectCopy>
 }
 
 export function Select(props?: SelectProps) {
@@ -63,6 +77,10 @@ export function Select(props?: SelectProps) {
     providers: Record<string, string>,
     _req: Request,
   ): Promise<Response> => {
+    const copy = {
+      ...DEFAULT_COPY,
+      ...props?.copy,
+    }
     const jsx = (
       <Layout>
         <div data-component="form">
@@ -72,12 +90,13 @@ export function Select(props?: SelectProps) {
             const icon = ICON[key]
             return (
               <a
-                href={`/${key}/authorize`}
+                href={`${basePath ?? ""}/${key}/authorize`}
                 data-component="button"
                 data-color="ghost"
               >
                 {icon && <i data-slot="icon">{icon}</i>}
-                Continue with {match?.display || DISPLAY[type] || type}
+                {copy.button_provider}{" "}
+                {match?.display || DISPLAY[type] || type}
               </a>
             )
           })}

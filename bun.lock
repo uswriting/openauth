@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "openauthjs",
@@ -122,7 +123,7 @@
     },
     "packages/openauth": {
       "name": "@uswriting/openauth",
-      "version": "0.3.7",
+      "version": "0.3.12",
       "dependencies": {
         "@standard-schema/spec": "1.0.0-beta.3",
         "aws4fetch": "1.0.20",

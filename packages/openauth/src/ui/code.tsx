@@ -24,7 +24,7 @@
  */
 /** @jsxImportSource hono/jsx */
 
-import { CodeProviderOptions } from "../provider/code.js"
+import { CodeProviderError, CodeProviderOptions } from "../provider/code.js"
 import { UnknownStateError } from "../error.js"
 import { Layout } from "./base.js"
 import { FormAlert } from "./form.js"
@@ -70,12 +70,16 @@ const DEFAULT_COPY = {
    * Copy for the resend button.
    */
   code_resend: "Resend",
+  /**
+   * Error message when claims are not allowed.
+   */
+  error_claims_not_allowed: "Access not allowed.",
 }
 
 export type CodeUICopy = typeof DEFAULT_COPY
 
 /**
- * Configure the password UI.
+ * Configure the code UI.
  */
 export interface CodeUIOptions {
   /**
@@ -91,7 +95,10 @@ export interface CodeUIOptions {
    * }
    * ```
    */
-  sendCode: (claims: Record<string, string>, code: string) => Promise<void>
+  sendCode: (
+    claims: Record<string, string>,
+    code: string,
+  ) => Promise<void | CodeProviderError>
   /**
    * Custom copy for the UI.
    */
@@ -101,6 +108,19 @@ export interface CodeUIOptions {
    * @default "email"
    */
   mode?: "email" | "phone"
+  /**
+   * Controls whether claims (email, phone, etc.) are allowed to receive codes.
+   *
+   * @default true
+   *
+   * @example
+   * ```ts
+   * { allowClaims: (claims) => claims.email?.endsWith("@company.com") ?? false }
+   * ```
+   */
+  allowClaims?:
+    | boolean
+    | ((claims: Record<string, string>) => boolean | Promise<boolean>)
 }
 
 /**
@@ -117,6 +137,7 @@ export function CodeUI(props: CodeUIOptions): CodeProviderOptions {
 
   return {
     sendCode: props.sendCode,
+    allowClaims: props.allowClaims,
     length: 6,
     request: async (_req, state, _form, error): Promise<Response> => {
       if (state.type === "start") {
@@ -125,6 +146,9 @@ export function CodeUI(props: CodeUIOptions): CodeProviderOptions {
             <form data-component="form" method="post">
               {error?.type === "invalid_claim" && (
                 <FormAlert message={copy.email_invalid} />
+              )}
+              {error?.type === "claims_not_allowed" && (
+                <FormAlert message={copy.error_claims_not_allowed} />
               )}
               <input type="hidden" name="action" value="request" />
               <input
@@ -189,7 +213,7 @@ export function CodeUI(props: CodeUIOptions): CodeProviderOptions {
                   className="hidden"
                 />
               ))}
-              <input type="hidden" name="action" value="request" />
+              <input type="hidden" name="action" value="resend" />
               <div data-component="form-footer">
                 <span>
                   {copy.code_didnt_get}{" "}

@@ -96,6 +96,25 @@ export interface CodeProviderConfig<
    * ```
    */
   sendCode: (claims: Claims, code: string) => Promise<void | CodeProviderError>
+  /**
+   * Controls whether claims (email, phone, etc.) are allowed to receive codes.
+   *
+   * @default true
+   *
+   * @example
+   * ```ts
+   * // Only allow company emails
+   * {
+   *   allowClaims: (claims) => claims.email?.endsWith("@company.com") ?? false
+   * }
+   *
+   * // Only allow existing users
+   * {
+   *   allowClaims: async (claims) => externalDB.userExists(claims.email)
+   * }
+   * ```
+   */
+  allowClaims?: boolean | ((claims: Claims) => boolean | Promise<boolean>)
 }
 
 /**
@@ -124,6 +143,7 @@ export type CodeProviderState =
  * | ----- | ----------- |
  * | `invalid_code` | The code is invalid. |
  * | `invalid_claim` | The _claim_, email or phone number, is invalid. |
+ * | `claims_not_allowed` | The claims are not allowed. |
  */
 export type CodeProviderError =
   | {
@@ -133,6 +153,9 @@ export type CodeProviderError =
       type: "invalid_claim"
       key: string
       value: string
+    }
+  | {
+      type: "claims_not_allowed"
     }
 
 export function CodeProvider<
@@ -175,6 +198,19 @@ export function CodeProvider<
         if (action === "request" || action === "resend") {
           const claims = Object.fromEntries(fd) as Claims
           delete claims.action
+
+          if (config.allowClaims !== undefined) {
+            const allowed =
+              typeof config.allowClaims === "function"
+                ? await config.allowClaims(claims)
+                : config.allowClaims
+            if (!allowed) {
+              return transition(c, { type: "start" }, fd, {
+                type: "claims_not_allowed",
+              })
+            }
+          }
+
           const err = await config.sendCode(claims, code)
           if (err) return transition(c, { type: "start" }, fd, err)
           return transition(

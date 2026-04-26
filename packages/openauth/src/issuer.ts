@@ -171,6 +171,7 @@ export interface AuthorizationState {
   state: string
   client_id: string
   audience?: string
+  scopes?: string[]
   pkce?: {
     challenge: string
     method: "S256"
@@ -194,16 +195,23 @@ import { compactDecrypt, CompactEncrypt, SignJWT } from "jose"
 import { Storage, StorageAdapter } from "./storage/storage.js"
 import { encryptionKeys, legacySigningKeys, signingKeys } from "./keys.js"
 import { validatePKCE } from "./pkce.js"
+import { parseScopes, validateScopes } from "./scopes.js"
 import { Select } from "./ui/select.js"
 import { setTheme, Theme } from "./ui/theme.js"
-import { getRelativeUrl, isDomainMatch, lazy } from "./util.js"
+import { getRelativeUrl, lazy } from "./util.js"
 import { DynamoStorage } from "./storage/dynamo.js"
 import { MemoryStorage } from "./storage/memory.js"
 import { cors } from "hono/cors"
 import { logger } from "hono/logger"
+import { createMiddleware } from "hono/factory"
 
 /** @internal */
 export const aws = awsHandle
+
+/**
+ * @internal
+ */
+export let basePath: string | undefined = undefined
 
 export interface IssuerInput<
   Providers extends Record<string, Provider<any>>,
@@ -217,6 +225,33 @@ export interface IssuerInput<
     >
   }[keyof Providers],
 > {
+  /**
+   * Mount OpenAuth on a sub-path of a domain so it can sit alongside another app.
+   *
+   * :::caution
+   * The well-known endpoints still need to be reachable at the host root for
+   * spec-compliant discovery. Proxy `/.well-known/oauth-authorization-server`
+   * and `/.well-known/jwks.json` to `<basePath>/.well-known/...`.
+   * :::
+   *
+   * @example
+   * ```ts title="issuer.ts"
+   * issuer({
+   *   basePath: "/auth",
+   *   // ...
+   * })
+   * ```
+   *
+   * The base path needs to be reflected in the issuer URL on the client:
+   *
+   * ```ts title="client.ts"
+   * const client = createClient({
+   *   issuer: "https://example.com/auth",
+   *   clientID: "123",
+   * })
+   * ```
+   */
+  basePath?: string
   /**
    * The shape of the subjects that you want to return.
    *
@@ -281,6 +316,15 @@ export interface IssuerInput<
    * ```
    */
   providers: Providers
+  /**
+   * Scopes advertised in `/.well-known/oauth-authorization-server`.
+   *
+   * @example
+   * ```ts
+   * { scopes_supported: ["read", "write"] }
+   * ```
+   */
+  scopes_supported?: string[]
   /**
    * The theme you want to use for the UI.
    *
@@ -406,29 +450,61 @@ export interface IssuerInput<
     req: Request,
   ): Promise<Response>
   /**
-   * @internal
-   */
-  error?(error: UnknownStateError, req: Request): Promise<Response>
-  /**
-   * Override the logic for whether a client request is allowed to call the issuer.
+   * Called on every refresh-token grant. Lets you re-fetch dynamic claims
+   * (roles, permissions, profile) so the new access token reflects current state
+   * instead of the snapshot taken at initial login.
    *
-   * By default, it uses the following:
-   *
-   * - Allow if the `redirectURI` is localhost.
-   * - Compare `redirectURI` to the request's hostname or the `x-forwarded-host` header. If they
-   *   are from the same sub-domain level, then allow.
+   * If omitted, the original properties from the initial authentication are reused.
    *
    * @example
    * ```ts
    * {
-   *   allow: async (input, req) => {
-   *     // Allow all clients
-   *     return true
+   *   refresh: async (ctx, value) => {
+   *     const permissions = await db.getPermissions(value.properties.userID)
+   *     return ctx.subject("user", {
+   *       ...value.properties,
+   *       permissions,
+   *     })
    *   }
    * }
    * ```
    */
-  allow?(
+  refresh?(
+    response: OnSuccessResponder<SubjectPayload<Subjects>>,
+    input: {
+      type: string
+      properties: any
+      subject: string
+      clientID: string
+    },
+    req: Request,
+  ): Promise<Response>
+  /**
+   * @internal
+   */
+  error?(error: UnknownStateError, req: Request): Promise<Response>
+  /**
+   * Validate whether a `client_id` + `redirect_uri` pair is allowed.
+   *
+   * Required. RFC 9700 §4.1 mandates exact string matching of `redirect_uri` against
+   * pre-registered values per client. Subdomain, pattern, or substring matching is
+   * not spec-compliant and enables open redirect / authorization code theft attacks.
+   *
+   * @example
+   * ```ts
+   * const REGISTERED: Record<string, string[]> = {
+   *   "web": ["https://app.example.com/callback"],
+   *   "mobile": ["com.example.app://callback"],
+   * }
+   *
+   * {
+   *   allow: async ({ clientID, redirectURI }) => {
+   *     return REGISTERED[clientID]?.includes(redirectURI) ?? false
+   *   }
+   * }
+   * ```
+   */
+  allow(
     input: {
       clientID: string
       redirectURI: string
@@ -453,6 +529,7 @@ export function issuer<
     >
   }[keyof Providers],
 >(input: IssuerInput<Providers, Subjects, Result>) {
+  basePath = input.basePath?.replace(/\/+$/, "")
   const error =
     input.error ??
     function (err) {
@@ -472,22 +549,12 @@ export function issuer<
   }
 
   const select = lazy(() => input.select ?? Select())
-  const allow = lazy(
-    () =>
-      input.allow ??
-      (async (input: any, req: Request) => {
-        const redir = new URL(input.redirectURI).hostname
-        if (redir === "localhost" || redir === "127.0.0.1") {
-          return true
-        }
-        const forwarded = req.headers.get("x-forwarded-host")
-        const host = forwarded
-          ? new URL(`https://${forwarded}`).hostname
-          : new URL(req.url).hostname
-
-        return isDomainMatch(redir, host)
-      }),
-  )
+  if (typeof input.allow !== "function") {
+    throw new Error(
+      "`allow` is required. RFC 9700 §4.1 requires exact string matching of redirect_uri against pre-registered values per client. See the `allow` option docstring for an example.",
+    )
+  }
+  const allow = lazy(() => input.allow)
 
   let storage = input.storage
   if (process.env.OPENAUTH_STORAGE) {
@@ -526,19 +593,27 @@ export function issuer<
             )
             if (authorization.response_type === "token") {
               const location = new URL(authorization.redirect_uri)
-              const tokens = await generateTokens(ctx, {
-                subject,
-                type: type as string,
-                properties,
-                clientID: authorization.client_id,
-                ttl: {
-                  access: subjectOpts?.ttl?.access ?? ttlAccess,
-                  refresh: subjectOpts?.ttl?.refresh ?? ttlRefresh,
+              const tokens = await generateTokens(
+                ctx,
+                {
+                  subject,
+                  type: type as string,
+                  properties,
+                  clientID: authorization.client_id,
+                  scopes: authorization.scopes,
+                  ttl: {
+                    access: subjectOpts?.ttl?.access ?? ttlAccess,
+                    refresh: subjectOpts?.ttl?.refresh ?? ttlRefresh,
+                  },
                 },
-              })
+                {
+                  generateRefreshToken: false,
+                },
+              )
               location.hash = new URLSearchParams({
                 access_token: tokens.access,
-                refresh_token: tokens.refresh,
+                token_type: "Bearer",
+                expires_in: tokens.expiresIn.toString(),
                 state: authorization.state || "",
               }).toString()
               await auth.unset(ctx, "authorization")
@@ -556,6 +631,7 @@ export function issuer<
                   redirectURI: authorization.redirect_uri,
                   clientID: authorization.client_id,
                   pkce: authorization.pkce,
+                  scopes: authorization.scopes,
                   ttl: {
                     access: subjectOpts?.ttl?.access ?? ttlAccess,
                     refresh: subjectOpts?.ttl?.refresh ?? ttlRefresh,
@@ -655,6 +731,7 @@ export function issuer<
       properties: any
       subject: string
       clientID: string
+      scopes?: string[]
       ttl: {
         access: number
         refresh: number
@@ -695,7 +772,9 @@ export function issuer<
         aud: value.clientID,
         iss: issuer(ctx),
         sub: value.subject,
+        scopes: value.scopes,
       })
+        .setIssuedAt(accessTimeUsed)
         .setExpirationTime(Math.floor(accessTimeUsed + value.ttl.access))
         .setProtectedHeader(
           await signingKey().then((k) => ({
@@ -724,7 +803,11 @@ export function issuer<
   }
 
   function issuer(ctx: Context) {
-    return new URL(getRelativeUrl(ctx, "/")).origin
+    const host = new URL(getRelativeUrl(ctx, "/")).origin
+    if (!basePath) return host
+    const url = new URL(host)
+    url.pathname = basePath
+    return url.toString()
   }
 
   const app = new Hono<{
@@ -732,6 +815,20 @@ export function issuer<
       authorization: AuthorizationState
     }
   }>().use(logger())
+
+  if (basePath) {
+    app.use(
+      createMiddleware(async (c, next) => {
+        await next()
+        if (!basePath) return
+        const bp = basePath.replace(/^\/+|\/+$/g, "")
+        const loc = c.res.headers.get("Location")
+        if (loc && loc.startsWith("/")) {
+          c.res.headers.set("Location", `/${bp}${loc}`)
+        }
+      }),
+    )
+  }
 
   for (const [name, value] of Object.entries(input.providers)) {
     const route = new Hono<any>()
@@ -782,8 +879,9 @@ export function issuer<
         issuer: iss,
         authorization_endpoint: `${iss}/authorize`,
         token_endpoint: `${iss}/token`,
-        jwks_uri: `${iss}/.well-known/jwks.json`,
+        jwks_uri: new URL("/.well-known/jwks.json", iss).toString(),
         response_types_supported: ["code", "token"],
+        scopes_supported: input.scopes_supported,
       })
     },
   )
@@ -799,6 +897,7 @@ export function issuer<
     async (c) => {
       const form = await c.req.formData()
       const grantType = form.get("grant_type")
+      const scope = form.get("scope") as string | null
 
       if (grantType === "authorization_code") {
         const code = form.get("code")
@@ -817,6 +916,7 @@ export function issuer<
           clientID: string
           redirectURI: string
           subject: string
+          scopes?: string[]
           ttl: {
             access: number
             refresh: number
@@ -880,11 +980,14 @@ export function issuer<
             )
           }
         }
+        payload.scopes = validateScopes(scope, payload.scopes)
         const tokens = await generateTokens(c, payload)
         return c.json({
           access_token: tokens.access,
+          token_type: "Bearer",
           expires_in: tokens.expiresIn,
           refresh_token: tokens.refresh,
+          scope: payload.scopes?.join(" "),
         })
       }
 
@@ -907,6 +1010,7 @@ export function issuer<
           properties: any
           clientID: string
           subject: string
+          scopes?: string[]
           ttl: {
             access: number
             refresh: number
@@ -946,13 +1050,53 @@ export function issuer<
             400,
           )
         }
+        payload.scopes = validateScopes(scope, payload.scopes)
+        if (input.refresh) {
+          return input.refresh(
+            {
+              async subject(type, properties, opts) {
+                const tokens = await generateTokens(
+                  c,
+                  {
+                    type: type as string,
+                    subject: opts?.subject || payload.subject,
+                    properties,
+                    clientID: payload.clientID,
+                    scopes: payload.scopes,
+                    ttl: {
+                      access: opts?.ttl?.access ?? ttlAccess,
+                      refresh: opts?.ttl?.refresh ?? ttlRefresh,
+                    },
+                  },
+                  { generateRefreshToken },
+                )
+                return c.json({
+                  access_token: tokens.access,
+                  token_type: "Bearer",
+                  refresh_token: tokens.refresh,
+                  expires_in: tokens.expiresIn,
+                  scope: payload.scopes?.join(" "),
+                })
+              },
+            },
+            {
+              type: payload.type,
+              properties: payload.properties,
+              subject: payload.subject,
+              clientID: payload.clientID,
+            },
+            c.req.raw,
+          )
+        }
         const tokens = await generateTokens(c, payload, {
           generateRefreshToken,
         })
         return c.json({
           access_token: tokens.access,
+          token_type: "Bearer",
           refresh_token: tokens.refresh,
           expires_in: tokens.expiresIn,
+          scope: payload.scopes?.join(" "),
         })
       }
 
@@ -988,6 +1132,7 @@ export function issuer<
                   opts?.subject || (await resolveSubject(type, properties)),
                 properties,
                 clientID: clientID.toString(),
+                scopes: parseScopes(scope),
                 ttl: {
                   access: opts?.ttl?.access ?? ttlAccess,
                   refresh: opts?.ttl?.refresh ?? ttlRefresh,
@@ -1078,12 +1223,14 @@ export function issuer<
     const audience = c.req.query("audience")
     const code_challenge = c.req.query("code_challenge")
     const code_challenge_method = c.req.query("code_challenge_method")
+    const scope = c.req.query("scope")
     const authorization: AuthorizationState = {
       response_type,
       redirect_uri,
       state,
       client_id,
       audience,
+      scopes: parseScopes(scope),
       pkce:
         code_challenge && code_challenge_method
           ? {
@@ -1092,7 +1239,6 @@ export function issuer<
             }
           : undefined,
     } as AuthorizationState
-    c.set("authorization", authorization)
 
     if (!redirect_uri) {
       return c.text("Missing redirect_uri", { status: 400 })
@@ -1123,6 +1269,7 @@ export function issuer<
     )
       throw new UnauthorizedClientError(client_id, redirect_uri)
     await auth.set(c, "authorization", 60 * 60 * 24, authorization)
+    c.set("authorization", authorization)
     if (provider) return c.redirect(`/${provider}/authorize`)
     const providers = Object.keys(input.providers)
     if (providers.length === 1) return c.redirect(`/${providers[0]}/authorize`)
@@ -1142,6 +1289,18 @@ export function issuer<
 
   app.onError(async (err, c) => {
     console.error(err)
+    if (err instanceof UnauthorizedClientError) {
+      return c.json(
+        { error: err.error, error_description: err.description },
+        400,
+      )
+    }
+    if (err instanceof MissingParameterError) {
+      return c.json(
+        { error: err.error, error_description: err.description },
+        400,
+      )
+    }
     if (err instanceof UnknownStateError) {
       return auth.forward(c, await error(err, c.req.raw))
     }

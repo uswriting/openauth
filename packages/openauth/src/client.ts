@@ -180,6 +180,16 @@ export interface AuthorizeOptions {
   provider?: string
 
   /**
+   * The OAuth 2.0 scopes to request.
+   *
+   * @example
+   * ```ts
+   * { scopes: ["read", "write"] }
+   * ```
+   */
+  scopes?: string[]
+
+  /**
    * The state that you can use to verify the code.
    */
   state?: string
@@ -291,7 +301,16 @@ export interface VerifyOptions {
    */
   issuer?: string
   /**
-   * @internal
+   * The expected audience (aud) claim value. This should match the client ID
+   * that the token was issued for. If not provided, defaults to the client's
+   * configured clientID.
+   *
+   * @example
+   * ```ts
+   * {
+   *   audience: "api"
+   * }
+   * ```
    */
   audience?: string
   /**
@@ -326,6 +345,10 @@ export interface VerifyResult<T extends SubjectSchema> {
   subject: {
     [type in keyof T]: { type: type; properties: v1.InferOutput<T[type]> }
   }[keyof T]
+  /**
+   * The scopes encoded in the token, if any were granted.
+   */
+  scopes?: string[]
 }
 
 /**
@@ -574,7 +597,7 @@ export function createClient(input: ClientInput): Client {
     const cached = issuerCache.get(issuer!)
     if (cached) return cached
     const wellKnown = (await (f || fetch)(
-      `${issuer}/.well-known/oauth-authorization-server`,
+      new URL("/.well-known/oauth-authorization-server", issuer).toString(),
     ).then((r) => r.json())) as WellKnown
     issuerCache.set(issuer!, wellKnown)
     return wellKnown
@@ -612,6 +635,9 @@ export function createClient(input: ClientInput): Client {
         result.searchParams.set("code_challenge_method", "S256")
         result.searchParams.set("code_challenge", pkce.challenge)
         challenge.verifier = pkce.verifier
+      }
+      if (opts?.scopes?.length) {
+        result.searchParams.set("scope", opts.scopes.join(" "))
       }
       return {
         challenge,
@@ -744,13 +770,16 @@ export function createClient(input: ClientInput): Client {
       options?: VerifyOptions,
     ): Promise<VerifyResult<T> | VerifyError> {
       const jwks = await getJWKS()
+      const expectedAudience = options?.audience || input.clientID
       try {
         const result = await jwtVerify<{
           mode: "access"
           type: keyof T
           properties: v1.InferInput<T[keyof T]>
+          scopes?: string[]
         }>(token, jwks, {
           issuer,
+          audience: expectedAudience,
         })
         const validated = await subjects[result.payload.type][
           "~standard"
@@ -762,6 +791,9 @@ export function createClient(input: ClientInput): Client {
               type: result.payload.type,
               properties: validated.value,
             } as any,
+            ...(result.payload.scopes
+              ? { scopes: result.payload.scopes }
+              : {}),
           }
         return {
           err: new InvalidSubjectError(),
@@ -776,6 +808,7 @@ export function createClient(input: ClientInput): Client {
             {
               refresh: refreshed.tokens!.refresh,
               issuer,
+              audience: expectedAudience,
               fetch: options?.fetch,
             },
           )
