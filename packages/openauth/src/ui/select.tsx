@@ -95,8 +95,7 @@ export function Select(props?: SelectProps) {
                 data-color="ghost"
               >
                 {icon && <i data-slot="icon">{icon}</i>}
-                {copy.button_provider}{" "}
-                {match?.display || DISPLAY[type] || type}
+                {copy.button_provider} {match?.display || DISPLAY[type] || type}
               </a>
             )
           })}

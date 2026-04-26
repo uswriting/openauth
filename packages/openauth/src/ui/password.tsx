@@ -152,11 +152,10 @@ type PasswordUICopy = typeof DEFAULT_COPY
 /**
  * Configure the password UI.
  */
-export interface PasswordUIOptions
-  extends Pick<
-    PasswordConfig,
-    "sendCode" | "validatePassword" | "allowRegistration" | "userExists"
-  > {
+export interface PasswordUIOptions extends Pick<
+  PasswordConfig,
+  "sendCode" | "validatePassword" | "allowRegistration" | "userExists"
+> {
   /**
    * Custom copy for the UI.
    */

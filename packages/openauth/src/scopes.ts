@@ -9,7 +9,5 @@ export function validateScopes(
   if (!authorizeReq?.length || tokenReq === null || tokenReq === undefined) {
     return authorizeReq
   }
-  return [
-    ...new Set(parseScopes(tokenReq)).intersection(new Set(authorizeReq)),
-  ]
+  return [...new Set(parseScopes(tokenReq)).intersection(new Set(authorizeReq))]
 }

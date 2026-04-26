@@ -791,9 +791,7 @@ export function createClient(input: ClientInput): Client {
               type: result.payload.type,
               properties: validated.value,
             } as any,
-            ...(result.payload.scopes
-              ? { scopes: result.payload.scopes }
-              : {}),
+            ...(result.payload.scopes ? { scopes: result.payload.scopes } : {}),
           }
         return {
           err: new InvalidSubjectError(),
