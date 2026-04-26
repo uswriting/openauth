@@ -1,4 +1,4 @@
-# @uswriting/openauth
+# @6over3/openauth
 
 ## 0.4.2
 

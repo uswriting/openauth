@@ -2,7 +2,7 @@
  * Use this provider to authenticate with Discord.
  *
  * ```ts {5-8}
- * import { DiscordProvider } from "@uswriting/openauth/provider/discord"
+ * import { DiscordProvider } from "@6over3/openauth/provider/discord"
  *
  * export default issuer({
  *   providers: {

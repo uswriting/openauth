@@ -3,7 +3,7 @@
  * which providers should be displayed in the select UI.
  *
  * ```ts
- * import { Select } from "@uswriting/openauth/ui/select"
+ * import { Select } from "@6over3/openauth/ui/select"
  *
  * export default issuer({
  *   select: Select({

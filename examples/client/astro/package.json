@@ -10,6 +10,6 @@
   },
   "dependencies": {
     "astro": "5.0.2",
-    "@uswriting/openauth": "workspace:*"
+    "@6over3/openauth": "workspace:*"
   }
 }

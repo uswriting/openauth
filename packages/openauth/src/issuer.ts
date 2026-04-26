@@ -5,7 +5,7 @@
  * The `issuer` function requires a few things:
  *
  * ```ts title="issuer.ts"
- * import { issuer } from "@uswriting/openauth"
+ * import { issuer } from "@6over3/openauth"
  *
  * const app = issuer({
  *   providers: { ... },
@@ -21,8 +21,8 @@
  * to be able to authenticate with GitHub and with their email and password.
  *
  * ```ts title="issuer.ts"
- * import { GithubProvider } from "@uswriting/openauth/provider/github"
- * import { PasswordProvider } from "@uswriting/openauth/provider/password"
+ * import { GithubProvider } from "@6over3/openauth/provider/github"
+ * import { PasswordProvider } from "@6over3/openauth/provider/password"
  *
  * const app = issuer({
  *   providers: {
@@ -70,7 +70,7 @@
  *
  * ```ts title="subjects.ts"
  * import { object, string } from "valibot"
- * import { createSubjects } from "@uswriting/openauth/subject"
+ * import { createSubjects } from "@6over3/openauth/subject"
  *
  * const subjects = createSubjects({
  *   user: object({
@@ -259,7 +259,7 @@ export interface IssuerInput<
    *
    * ```ts title="issuer.ts"
    * import { object, string } from "valibot"
-   * import { createSubjects } from "@uswriting/openauth/subject"
+   * import { createSubjects } from "@6over3/openauth/subject"
    *
    * issuer({
    *   subjects: createSubjects({
@@ -277,7 +277,7 @@ export interface IssuerInput<
    *
    * @example
    * ```ts title="issuer.ts"
-   * import { DynamoStorage } from "@uswriting/openauth/storage/dynamo"
+   * import { DynamoStorage } from "@6over3/openauth/storage/dynamo"
    *
    * issuer({
    *   storage: DynamoStorage()
@@ -292,7 +292,7 @@ export interface IssuerInput<
    * @example
    *
    * ```ts title="issuer.ts"
-   * import { GithubProvider } from "@uswriting/openauth/provider/github"
+   * import { GithubProvider } from "@6over3/openauth/provider/github"
    *
    * issuer({
    *   providers: {
@@ -333,7 +333,7 @@ export interface IssuerInput<
    *
    * @example
    * ```ts title="issuer.ts"
-   * import { THEME_SST } from "@uswriting/openauth/ui/theme"
+   * import { THEME_SST } from "@6over3/openauth/ui/theme"
    *
    * issuer({
    *   theme: THEME_SST
@@ -344,7 +344,7 @@ export interface IssuerInput<
    * Or define your own.
    *
    * ```ts title="issuer.ts"
-   * import type { Theme } from "@uswriting/openauth/ui/theme"
+   * import type { Theme } from "@6over3/openauth/ui/theme"
    *
    * const MY_THEME: Theme = {
    *   // ...
@@ -398,7 +398,7 @@ export interface IssuerInput<
    * of the OpenAuth server.
    *
    * ```ts title="issuer.ts"
-   * import { Select } from "@uswriting/openauth/ui/select"
+   * import { Select } from "@6over3/openauth/ui/select"
    *
    * issuer({
    *   select: Select({

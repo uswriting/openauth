@@ -2,8 +2,8 @@
  * Configure the UI that's used by the Password provider.
  *
  * ```ts {1,7-12}
- * import { PasswordUI } from "@uswriting/openauth/ui/password"
- * import { PasswordProvider } from "@uswriting/openauth/provider/password"
+ * import { PasswordUI } from "@6over3/openauth/ui/password"
+ * import { PasswordProvider } from "@6over3/openauth/provider/password"
  *
  * export default issuer({
  *   providers: {

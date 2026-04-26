@@ -2,7 +2,7 @@
  * Use this provider to authenticate with Twitch.
  *
  * ```ts {5-8}
- * import { TwitchProvider } from "@uswriting/openauth/provider/twitch"
+ * import { TwitchProvider } from "@6over3/openauth/provider/twitch"
  *
  * export default issuer({
  *   providers: {

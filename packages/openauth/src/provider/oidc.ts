@@ -2,7 +2,7 @@
  * Use this to connect authentication providers that support OIDC.
  *
  * ```ts {5-8}
- * import { OidcProvider } from "@uswriting/openauth/provider/oidc"
+ * import { OidcProvider } from "@6over3/openauth/provider/oidc"
  *
  * export default issuer({
  *   providers: {

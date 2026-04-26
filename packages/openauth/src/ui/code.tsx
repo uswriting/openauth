@@ -2,8 +2,8 @@
  * Configure the UI that's used by the Code provider.
  *
  * ```ts {1,7-12}
- * import { CodeUI } from "@uswriting/openauth/ui/code"
- * import { CodeProvider } from "@uswriting/openauth/provider/code"
+ * import { CodeUI } from "@6over3/openauth/ui/code"
+ * import { CodeProvider } from "@6over3/openauth/provider/code"
  *
  * export default issuer({
  *   providers: {

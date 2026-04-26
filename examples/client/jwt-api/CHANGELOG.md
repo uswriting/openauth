@@ -5,4 +5,4 @@
 ### Patch Changes
 
 - Updated dependencies [8b5f490]
-  - @uswriting/openauth@0.2.4
+  - @6over3/openauth@0.2.4

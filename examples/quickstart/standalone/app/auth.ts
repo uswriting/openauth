@@ -1,4 +1,4 @@
-import { createClient } from "@uswriting/openauth/client"
+import { createClient } from "@6over3/openauth/client"
 import { cookies as getCookies } from "next/headers"
 
 export const client = createClient({

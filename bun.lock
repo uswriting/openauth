@@ -18,7 +18,7 @@
       "name": "@uswriting/example-client-astro",
       "version": "0.0.0",
       "dependencies": {
-        "@uswriting/openauth": "workspace:*",
+        "@6over3/openauth": "workspace:*",
         "astro": "5.0.2",
       },
     },
@@ -30,7 +30,7 @@
       "name": "@uswriting/example-jwt-api",
       "version": "1.0.1",
       "dependencies": {
-        "@uswriting/openauth": "workspace:*",
+        "@6over3/openauth": "workspace:*",
       },
     },
     "examples/client/lambda-api": {
@@ -41,7 +41,7 @@
       "name": "@uswriting/example-nextjs",
       "version": "0.1.6",
       "dependencies": {
-        "@uswriting/openauth": "workspace:*",
+        "@6over3/openauth": "workspace:*",
         "next": "15.1.0",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
@@ -57,7 +57,7 @@
       "name": "@uswriting/example-react",
       "version": "0.0.0",
       "dependencies": {
-        "@uswriting/openauth": "workspace:*",
+        "@6over3/openauth": "workspace:*",
         "react": "19.0.0",
         "react-dom": "19.0.0",
       },
@@ -94,14 +94,14 @@
       "name": "@uswriting/example-issuer-bun",
       "version": "0.0.0",
       "dependencies": {
-        "@uswriting/openauth": "workspace:*",
+        "@6over3/openauth": "workspace:*",
       },
     },
     "examples/issuer/cloudflare": {
       "name": "@uswriting/example-issuer-cloudflare",
       "version": "0.0.0",
       "dependencies": {
-        "@uswriting/openauth": "workspace:*",
+        "@6over3/openauth": "workspace:*",
         "sst": "3.4.22",
       },
     },
@@ -113,7 +113,7 @@
       "name": "@uswriting/example-issuer-aws",
       "version": "0.0.0",
       "dependencies": {
-        "@uswriting/openauth": "workspace:*",
+        "@6over3/openauth": "workspace:*",
         "sst": "3.5.1",
       },
     },
@@ -122,8 +122,8 @@
       "version": "0.0.0",
     },
     "packages/openauth": {
-      "name": "@uswriting/openauth",
-      "version": "0.3.12",
+      "name": "@6over3/openauth",
+      "version": "0.4.0",
       "dependencies": {
         "@standard-schema/spec": "1.0.0-beta.3",
         "aws4fetch": "1.0.20",
@@ -145,6 +145,8 @@
     },
   },
   "packages": {
+    "@6over3/openauth": ["@6over3/openauth@workspace:packages/openauth"],
+
     "@ampproject/remapping": ["@ampproject/remapping@2.3.0", "", { "dependencies": { "@jridgewell/gen-mapping": "^0.3.5", "@jridgewell/trace-mapping": "^0.3.24" } }, "sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw=="],
 
     "@astrojs/compiler": ["@astrojs/compiler@2.10.3", "", {}, "sha512-bL/O7YBxsFt55YHU021oL+xz+B/9HvGNId3F9xURN16aeqDK9juHGktdkCSXz+U4nqFACq6ZFvWomOzhV+zfPw=="],
@@ -536,8 +538,6 @@
     "@uswriting/example-nextjs": ["@uswriting/example-nextjs@workspace:examples/client/nextjs"],
 
     "@uswriting/example-react": ["@uswriting/example-react@workspace:examples/client/react"],
-
-    "@uswriting/openauth": ["@uswriting/openauth@workspace:packages/openauth"],
 
     "@vitejs/plugin-react": ["@vitejs/plugin-react@4.3.4", "", { "dependencies": { "@babel/core": "^7.26.0", "@babel/plugin-transform-react-jsx-self": "^7.25.9", "@babel/plugin-transform-react-jsx-source": "^7.25.9", "@types/babel__core": "^7.20.5", "react-refresh": "^0.14.2" }, "peerDependencies": { "vite": "^4.2.0 || ^5.0.0 || ^6.0.0" } }, "sha512-SCCPBJtYLdE8PX/7ZQAs1QAZ8Jqwih+0VBLum1EGqmCCQal+MIUqLCzj3ZUy8ufbC0cAM4LRlSTm7IQJwWT4ug=="],
 

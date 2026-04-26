@@ -2,7 +2,7 @@
  * Use this provider to authenticate with Spotify.
  *
  * ```ts {5-8}
- * import { SpotifyProvider } from "@uswriting/openauth/provider/spotify"
+ * import { SpotifyProvider } from "@6over3/openauth/provider/spotify"
  *
  * export default issuer({
  *   providers: {

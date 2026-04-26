@@ -1,4 +1,4 @@
-import type { SubjectPayload } from "@uswriting/openauth/subject"
+import type { SubjectPayload } from "@6over3/openauth/subject"
 import { subjects } from "./auth"
 
 declare global {

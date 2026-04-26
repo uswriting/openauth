@@ -1,4 +1,4 @@
-import { createClient } from "@uswriting/openauth/client"
+import { createClient } from "@6over3/openauth/client"
 import type { APIContext } from "astro"
 export { subjects } from "../../../subjects"
 

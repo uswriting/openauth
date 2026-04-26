@@ -4,7 +4,7 @@
  * #### Using OAuth
  *
  * ```ts {5-8}
- * import { AppleProvider } from "@uswriting/openauth/provider/apple"
+ * import { AppleProvider } from "@6over3/openauth/provider/apple"
  *
  * export default issuer({
  *   providers: {
@@ -19,7 +19,7 @@
  * #### Using OIDC
  *
  * ```ts {5-7}
- * import { AppleOidcProvider } from "@uswriting/openauth/provider/apple"
+ * import { AppleOidcProvider } from "@6over3/openauth/provider/apple"
  *
  * export default issuer({
  *   providers: {

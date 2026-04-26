@@ -2,7 +2,7 @@
  * Use this provider to authenticate with Slack.
  *
  * ```ts {5-10}
- * import { SlackProvider } from "@uswriting/openauth/provider/slack"
+ * import { SlackProvider } from "@6over3/openauth/provider/slack"
  *
  * export default issuer({
  *   providers: {

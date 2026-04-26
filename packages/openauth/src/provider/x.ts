@@ -2,7 +2,7 @@
  * Use this provider to authenticate with X.com.
  *
  * ```ts {5-8}
- * import { XProvider } from "@uswriting/openauth/provider/x"
+ * import { XProvider } from "@6over3/openauth/provider/x"
  *
  * export default issuer({
  *   providers: {

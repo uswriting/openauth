@@ -6,7 +6,7 @@ import {
   useContext,
   createContext,
 } from "react"
-import { createClient } from "@uswriting/openauth/client"
+import { createClient } from "@6over3/openauth/client"
 
 const client = createClient({
   clientID: "react",

@@ -2,7 +2,7 @@
   "name": "@uswriting/example-issuer-cloudflare",
   "version": "0.0.0",
   "dependencies": {
-    "@uswriting/openauth": "workspace:*",
+    "@6over3/openauth": "workspace:*",
     "sst": "3.4.22"
   }
 }

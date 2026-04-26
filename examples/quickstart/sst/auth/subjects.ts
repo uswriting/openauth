@@ -1,5 +1,5 @@
 import { object, string } from "valibot"
-import { createSubjects } from "@uswriting/openauth/subject"
+import { createSubjects } from "@6over3/openauth/subject"
 
 export const subjects = createSubjects({
   user: object({

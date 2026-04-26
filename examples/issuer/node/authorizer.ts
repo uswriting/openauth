@@ -1,9 +1,9 @@
-import { issuer } from "@uswriting/openauth"
-import { MemoryStorage } from "@uswriting/openauth/storage/memory"
-import { PasswordUI } from "@uswriting/openauth/ui/password"
+import { issuer } from "@6over3/openauth"
+import { MemoryStorage } from "@6over3/openauth/storage/memory"
+import { PasswordUI } from "@6over3/openauth/ui/password"
 import { serve } from "@hono/node-server"
 import { subjects } from "../../subjects"
-import { PasswordProvider } from "@uswriting/openauth/provider/password"
+import { PasswordProvider } from "@6over3/openauth/provider/password"
 
 async function getUser(email: string) {
   // Get user from database

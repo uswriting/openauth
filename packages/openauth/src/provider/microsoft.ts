@@ -4,7 +4,7 @@
  * #### Using OAuth
  *
  * ```ts {5-9}
- * import { MicrosoftProvider } from "@uswriting/openauth/provider/microsoft"
+ * import { MicrosoftProvider } from "@6over3/openauth/provider/microsoft"
  *
  * export default issuer({
  *   providers: {
@@ -20,7 +20,7 @@
  * #### Using OIDC
  *
  * ```ts {5-7}
- * import { MicrosoftOidcProvider } from "@uswriting/openauth/provider/microsoft"
+ * import { MicrosoftOidcProvider } from "@6over3/openauth/provider/microsoft"
  *
  * export default issuer({
  *   providers: {

@@ -3,8 +3,8 @@
  * paired with the `PasswordUI`.
  *
  * ```ts
- * import { PasswordUI } from "@uswriting/openauth/ui/password"
- * import { PasswordProvider } from "@uswriting/openauth/provider/password"
+ * import { PasswordUI } from "@6over3/openauth/ui/password"
+ * import { PasswordProvider } from "@6over3/openauth/provider/password"
  *
  * export default issuer({
  *   providers: {

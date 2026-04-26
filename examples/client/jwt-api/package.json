@@ -10,6 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@uswriting/openauth": "workspace:*"
+    "@6over3/openauth": "workspace:*"
   }
 }

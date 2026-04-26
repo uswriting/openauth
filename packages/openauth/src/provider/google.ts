@@ -4,7 +4,7 @@
  * #### Using OAuth
  *
  * ```ts {5-8}
- * import { GoogleProvider } from "@uswriting/openauth/provider/google"
+ * import { GoogleProvider } from "@6over3/openauth/provider/google"
  *
  * export default issuer({
  *   providers: {
@@ -19,7 +19,7 @@
  * #### Using OIDC
  *
  * ```ts {5-7}
- * import { GoogleOidcProvider } from "@uswriting/openauth/provider/google"
+ * import { GoogleOidcProvider } from "@6over3/openauth/provider/google"
  *
  * export default issuer({
  *   providers: {

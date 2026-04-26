@@ -4,7 +4,7 @@
  * @example
  *
  * ```ts
- * import { THEME_SST } from "@uswriting/openauth/ui/theme"
+ * import { THEME_SST } from "@6over3/openauth/ui/theme"
  *
  * export default issuer({
  *   theme: THEME_SST,
@@ -15,7 +15,7 @@
  * Or define your own.
  *
  * ```ts
- * import type { Theme } from "@uswriting/openauth/ui/theme"
+ * import type { Theme } from "@6over3/openauth/ui/theme"
  *
  * const MY_THEME: Theme = {
  *   title: "Acne",
